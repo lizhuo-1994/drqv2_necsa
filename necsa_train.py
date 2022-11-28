@@ -5,7 +5,7 @@
 import warnings
 warnings.filterwarnings('ignore', category=DeprecationWarning)
 
-import os, datetime, json
+import os, datetime, json, argparse, copy
 os.environ['MKL_SERVICE_FORCE_INTEL'] = '1'
 os.environ['MUJOCO_GL'] = 'egl'
 
@@ -22,10 +22,28 @@ from logger import Logger
 from replay_buffer import ReplayBufferStorage, make_replay_loader
 from video import TrainVideoRecorder, VideoRecorder
 
+from abstracter import Abstracter, ScoreInspector
+
 torch.backends.cudnn.benchmark = True
 
 
-ALGO_NAME = 'Drqv2'
+ALGO_NAME = 'NECSA_Drqv2'
+# parser = argparse.ArgumentParser()
+
+# parser.add_argument("--step", type=int, default=3)                  # Directory for storing all experimental data
+# parser.add_argument("--grid_num", type=int, default=5)              # Directory for storing all experimental data
+# parser.add_argument("--epsilon", type=float, default=0.1)            # Directory for storing all experimental data
+# parser.add_argument("--raw_state_dim", type=int, default=50 ) 
+# parser.add_argument("--state_dim", type=int, default=24) 
+# parser.add_argument("--state_min", type=float, default=-1)        # 
+# parser.add_argument("--state_max", type=float, default=1 )         # state_max, state_min
+# parser.add_argument("--action_dim", type=int, default=6) 
+# parser.add_argument("--action_min", type=float, default=-1 )        # 
+# parser.add_argument("--action_max", type=float, default=1 )         # state_max, state_min
+# parser.add_argument("--mode", type=str, default='hidden', choices=['state', 'state_action', 'hidden'] )   # 
+# parser.add_argument("--reduction", action="store_true")   # 
+
+# args=parser.parse_args()
 
 def make_agent(obs_spec, action_spec, cfg):
     cfg.obs_shape = obs_spec.shape
@@ -34,7 +52,7 @@ def make_agent(obs_spec, action_spec, cfg):
 
 
 class Workspace:
-    def __init__(self, cfg):
+    def __init__(self, cfg, NECSA_DICT = None):
         self.work_dir = Path.cwd()
         print(f'workspace: {self.work_dir}')
 
@@ -49,6 +67,32 @@ class Workspace:
         self.timer = utils.Timer()
         self._global_step = 0
         self._global_episode = 0
+
+        self.inspector = ScoreInspector(
+            3, 
+            5, 
+            50, 
+            24, 
+            -1, 
+            1,
+            6, 
+            -1, 
+            1, 
+            'hidden', 
+            True
+            )
+
+        self.abstracter = Abstracter(
+                3, 
+                0.1, 
+            )
+
+        self.abstracter.inspector = self.inspector
+
+        self.time_step_list = []
+        self.hidden_list = []
+        self.reward_list = []
+        self.done_list = []
 
         self.eval_results = []
 
@@ -108,7 +152,7 @@ class Workspace:
             self.video_recorder.init(self.eval_env, enabled=(episode == 0))
             while not time_step.last():
                 with torch.no_grad(), utils.eval_mode(self.agent):
-                    action = self.agent.act(time_step.observation,
+                    action, _ = self.agent.act(time_step.observation,
                                             self.global_step,
                                             eval_mode=True)
                 time_step = self.eval_env.step(action)
@@ -178,7 +222,7 @@ class Workspace:
 
             # sample action
             with torch.no_grad(), utils.eval_mode(self.agent):
-                action = self.agent.act(time_step.observation,
+                action, hidden = self.agent.act(time_step.observation,
                                         self.global_step,
                                         eval_mode=False)
 
@@ -189,11 +233,37 @@ class Workspace:
 
             # take env step
             time_step = self.train_env.step(action)
+
+            self.time_step_list.append(copy.deepcopy(time_step))
+            self.hidden_list.append(hidden)
+            self.reward_list.append(time_step.reward)
+            self.done_list.append(time_step.last())
+            print(hidden)
+            print(time_step.reward)
+            print(time_step.last())
+            self.abstracter.append(hidden, time_step.reward, time_step.last())
+
             episode_reward += time_step.reward
-            self.replay_storage.add(time_step)
-            self.train_video_recorder.record(time_step.observation)
+            
+            # self.train_video_recorder.record(time_step.observation)
             episode_step += 1
             self._global_step += 1
+
+            if time_step.last():
+                self.reward_list = self.abstracter.reward_shaping(np.array(self.hidden_list), np.array(self.reward_list))
+                for i in range(len(self.reward_list)):
+                    time_step = self.time_step_list[i]
+                    print(time_step)
+                    time_step = time_step._replace(reward=self.reward_list[i])
+                    print(time_step)
+                    exit()
+                    self.replay_storage.add(time_step)
+
+                self.time_step_list = []
+                self.hidden_list = []
+                self.reward_list = []
+
+           
 
     def save_snapshot(self):
         snapshot = self.work_dir / 'snapshot.pt'
@@ -210,9 +280,9 @@ class Workspace:
             self.__dict__[k] = v
 
 
-@hydra.main(config_path='cfgs', config_name='config')
+@hydra.main(config_path='cfgs', config_name='necsa_config')
 def main(cfg):
-    from train import Workspace as W
+    from necsa_train import Workspace as W
     root_dir = Path.cwd()
     workspace = W(cfg)
     snapshot = root_dir / 'snapshot.pt'
