@@ -11,3 +11,4 @@ dmc_benchmarks.py
 check_sweep.py
 cancel_sweep.py
 nohup*
+nohup.out
