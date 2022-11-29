@@ -1,0 +1,32 @@
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/functional_pil.py:387: DeprecationWarning: BILINEAR is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BILINEAR instead.
+  def resize(img, size, interpolation=Image.BILINEAR):
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/functional_pil.py:545: DeprecationWarning: BICUBIC is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BICUBIC instead.
+  def perspective(img, perspective_coeffs, interpolation=Image.BICUBIC, fill=None):
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/functional.py:288: DeprecationWarning: BILINEAR is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BILINEAR instead.
+  def resize(img: Tensor, size: List[int], interpolation: int = Image.BILINEAR) -> Tensor:
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/functional.py:419: DeprecationWarning: BILINEAR is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BILINEAR instead.
+  img: Tensor, top: int, left: int, height: int, width: int, size: List[int], interpolation: int = Image.BILINEAR
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/transforms.py:26: DeprecationWarning: NEAREST is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.NEAREST or Dither.NONE instead.
+  Image.NEAREST: 'PIL.Image.NEAREST',
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/transforms.py:27: DeprecationWarning: BILINEAR is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BILINEAR instead.
+  Image.BILINEAR: 'PIL.Image.BILINEAR',
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/transforms.py:28: DeprecationWarning: BICUBIC is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BICUBIC instead.
+  Image.BICUBIC: 'PIL.Image.BICUBIC',
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/transforms.py:29: DeprecationWarning: LANCZOS is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.LANCZOS instead.
+  Image.LANCZOS: 'PIL.Image.LANCZOS',
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/transforms.py:30: DeprecationWarning: HAMMING is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.HAMMING instead.
+  Image.HAMMING: 'PIL.Image.HAMMING',
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/transforms.py:31: DeprecationWarning: BOX is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BOX instead.
+  Image.BOX: 'PIL.Image.BOX',
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/transforms.py:250: DeprecationWarning: BILINEAR is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BILINEAR instead.
+  def __init__(self, size, interpolation=Image.BILINEAR):
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/transforms.py:671: DeprecationWarning: BILINEAR is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BILINEAR instead.
+  def __init__(self, distortion_scale=0.5, p=0.5, interpolation=Image.BILINEAR, fill=0):
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torchvision/transforms/transforms.py:752: DeprecationWarning: BILINEAR is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BILINEAR instead.
+  def __init__(self, size, scale=(0.08, 1.0), ratio=(3. / 4., 4. / 3.), interpolation=Image.BILINEAR):
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torch/utils/tensorboard/__init__.py:3: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if not hasattr(tensorboard, '__version__') or LooseVersion(tensorboard.__version__) < LooseVersion('1.15'):
+/home/lizhuo/miniconda3/envs/drqv2/lib/python3.8/site-packages/torch/utils/tensorboard/__init__.py:3: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if not hasattr(tensorboard, '__version__') or LooseVersion(tensorboard.__version__) < LooseVersion('1.15'):
+workspace: /home/lizhuo/drqv2_necsa/exp_local/2022.11.29/163904_task=humanoid_walk
+| eval           | F: 0 | S: 0 | E: 0 | L: 1000 | R: 0.7416 | T: 0:00:00

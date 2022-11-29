@@ -47,15 +47,15 @@ class ScoreInspector:
         if self.reduction:
             
             if self.mode == 'state':
-                self.project_matrix = np.random.uniform(0,0.1,(self.raw_state_dim,self.state_dim))
+                self.project_matrix = np.random.uniform(-1,1,(self.raw_state_dim,self.state_dim))
                 self.min_state = np.dot(np.array([self.state_min for i in range(self.raw_state_dim)]), self.project_matrix)
                 self.max_state = np.dot(np.array([self.state_max for i in range(self.raw_state_dim)]), self.project_matrix)
             elif self.mode == 'state_action':
-                self.project_matrix = np.random.uniform(0,0.1,(self.raw_state_dim + self.action_dim,self.state_dim))
+                self.project_matrix = np.random.uniform(-1,1,(self.raw_state_dim + self.action_dim,self.state_dim))
                 self.min_state = np.dot(np.array([self.state_min for i in range(self.raw_state_dim)]+ [self.action_min for i in range(self.action_dim)]), self.project_matrix)
                 self.max_state = np.dot(np.array([self.state_max for i in range(self.raw_state_dim)]+ [self.action_max for i in range(self.action_dim)]), self.project_matrix)
             elif self.mode == 'hidden':
-                self.project_matrix = np.random.uniform(0,1,(self.raw_state_dim,self.state_dim))
+                self.project_matrix = np.random.uniform(-1,1,(self.raw_state_dim,self.state_dim))
                 self.min_state = np.dot(np.array([self.state_min for i in range(self.raw_state_dim)]), self.project_matrix)
                 self.max_state = np.dot(np.array([self.state_max for i in range(self.raw_state_dim)]), self.project_matrix)
 
@@ -136,6 +136,7 @@ class ScoreInspector:
     def pattern_abstract(self, con_states, rewards):
 
         abs_states = self.discretize_states(con_states)
+
         min_avg_proceed = self.min_avg_proceed
         max_avg_proceed = self.max_avg_proceed
 
@@ -198,7 +199,6 @@ class Abstracter:
         self.con_states.append(con_state)
         self.con_reward.append(reward)
         self.con_dones.append(done)
-
         if done:
             if self.inspector.reduction:
                 self.con_states = self.dim_reduction(self.con_states)
@@ -220,7 +220,7 @@ class Abstracter:
         if score != None:
             if  time > 0:
                 delta = (score - self.inspector.score_avg) * self.epsilon * 10
-                # print(abs_pattern, score, self.inspector.score_avg, rewards[0], rewards[0] + delta)
+                #print(pattern, score, self.inspector.score_avg, rewards[0], rewards[0] + delta)
                 rewards[0] += delta
                 
         return rewards[0]

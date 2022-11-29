@@ -69,22 +69,22 @@ class Workspace:
         self._global_episode = 0
 
         self.inspector = ScoreInspector(
-            3, 
-            5, 
-            50, 
-            24, 
-            -1, 
-            1,
-            6, 
-            -1, 
-            1, 
-            'hidden', 
-            True
+            3, # step
+            5, # grid_num
+            cfg.feature_dim, # raw_state_dim cfg.feature_dim
+            24, # state_dim 
+            -1, # state_min
+            1, # state_max
+            6, # action_dim
+            -1, # action_min
+            1, # action_max
+            'hidden', # mode
+            True # reduction
             )
 
         self.abstracter = Abstracter(
-                3, 
-                0.1, 
+                3, # step
+                0.1, # epsilon
             )
 
         self.abstracter.inspector = self.inspector
@@ -238,9 +238,7 @@ class Workspace:
             self.hidden_list.append(hidden)
             self.reward_list.append(time_step.reward)
             self.done_list.append(time_step.last())
-            print(hidden)
-            print(time_step.reward)
-            print(time_step.last())
+
             self.abstracter.append(hidden, time_step.reward, time_step.last())
 
             episode_reward += time_step.reward
@@ -250,18 +248,19 @@ class Workspace:
             self._global_step += 1
 
             if time_step.last():
+                self.inspector.sync_scores()
                 self.reward_list = self.abstracter.reward_shaping(np.array(self.hidden_list), np.array(self.reward_list))
                 for i in range(len(self.reward_list)):
                     time_step = self.time_step_list[i]
-                    print(time_step)
-                    time_step = time_step._replace(reward=self.reward_list[i])
-                    print(time_step)
-                    exit()
+                    if time_step.reward != self.reward_list[i]:
+                        time_step = time_step._replace(reward=self.reward_list[i])
+
                     self.replay_storage.add(time_step)
 
                 self.time_step_list = []
                 self.hidden_list = []
                 self.reward_list = []
+                self.done_list = []
 
            
 
